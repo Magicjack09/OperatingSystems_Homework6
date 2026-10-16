@@ -7,18 +7,22 @@
 int main(void) {
     int N, rounds;
 
+    //step 1 is input
+
     printf("Enter number of voters: ");
     scanf("%d", &N);
     printf("Enter number of rounds: ");
     scanf("%d", &rounds);
 
+
+    // step 2 create pipes
     int fd[N][2];       
     int go[N][2];       
     for (int i = 0; i < N; i++) {
         pipe(fd[i]);
         pipe(go[i]);
     }
-
+    //step 3 create votes
     int id = -1;
     for (int i = 0; i < N; i++) {
         if (fork() == 0) {
@@ -28,7 +32,7 @@ int main(void) {
     }
 
     srand(time(NULL) * getpid());
-
+// step 4 voting
     for (int r = 1; r <= rounds; r++) {
         if (id == -1) {
             int yes = 0, vote;
@@ -61,7 +65,7 @@ int main(void) {
             write(fd[id][1], &vote, sizeof(vote));
         }
     }
-
+    // judge waits
     if (id == -1) {
         for (int i = 0; i < N; i++)
             wait(NULL);
